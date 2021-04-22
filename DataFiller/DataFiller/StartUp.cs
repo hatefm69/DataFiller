@@ -45,7 +45,7 @@ namespace DataFiller
 
             services.AddHostedService<QuartzHostedService>();
 
-            //services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
+            services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
 
             services.BuildAutofacServiceProvider(Configuration);
         }
