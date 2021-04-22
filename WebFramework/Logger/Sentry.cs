@@ -10,10 +10,6 @@ using System;
 
 namespace WebFramework.Logger
 {
-    class Sentry
-    {
-
-    }
     public class Program
     {
         public static void Main(string[] args) => BuildWebHost(args).Run();
