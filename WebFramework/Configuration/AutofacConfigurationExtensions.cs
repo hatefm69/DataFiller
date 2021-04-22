@@ -3,20 +3,11 @@ using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
-using BusinessLayout;
-using BusinessLayout.Cart.Query.GetCart;
-using BusinessLayout.Configuration.Validation;
 using Common;
-using Data;
-using Data.Repositories;
-using Entities;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Services.DataInitializer;
-using Services.Product;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,7 +15,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using ZarrinpalPayment.Services;
 
 namespace WebFramework.Configuration
 {
