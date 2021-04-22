@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Remove="Api\**" />
+    <Compile Remove="Automapper\**" />
     <Compile Remove="Filters\**" />
     <Compile Remove="Middlewares\**" />
     <Compile Remove="MultiLanguage\**" />
@@ -18,6 +19,7 @@
     <Compile Remove="Session\**" />
     <Compile Remove="Swagger\**" />
     <EmbeddedResource Remove="Api\**" />
+    <EmbeddedResource Remove="Automapper\**" />
     <EmbeddedResource Remove="Filters\**" />
     <EmbeddedResource Remove="Middlewares\**" />
     <EmbeddedResource Remove="MultiLanguage\**" />
@@ -29,6 +31,7 @@
     <EmbeddedResource Remove="Session\**" />
     <EmbeddedResource Remove="Swagger\**" />
     <None Remove="Api\**" />
+    <None Remove="Automapper\**" />
     <None Remove="Filters\**" />
     <None Remove="Middlewares\**" />
     <None Remove="MultiLanguage\**" />
@@ -49,14 +52,11 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <Compile Include="Api\ApiResult.cs" />
     <Compile Include="Middlewares\CustomExceptionHandlerMiddleware.cs" />
   </ItemGroup>
 
   <ItemGroup>
-=======
->>>>>>> ff23e34d51b0d49cb2135baa86697bda99b0e30c
     <PackageReference Include="Autofac" Version="6.1.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.0.1" />
@@ -93,8 +93,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
-    <ProjectReference Include="..\Entities\Entities.csproj" />
   </ItemGroup>
 
 </Project>

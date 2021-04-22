@@ -1,17 +1,10 @@
 ﻿using Autofac;
 using Common;
-using DataFiller.Job;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Quartz;
-using Quartz.Spi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebFramework.Configuration;
 using WebFramework.MiddleWares;
 using WebFramework.RabbitMQ;
@@ -29,19 +22,19 @@ namespace DataFiller
         {
             Configuration = configuration;
 
-        
+
 
             _siteSetting = configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
- 
+
 
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
- 
+
             services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
- 
+
             return services.BuildAutofacServiceProvider(Configuration);
         }
 
