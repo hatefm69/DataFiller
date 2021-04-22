@@ -5,12 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Cart\Command\GetCart\**" />
-    <EmbeddedResource Remove="Cart\Command\GetCart\**" />
-    <None Remove="Cart\Command\GetCart\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Components\ZarrinpalPayment\ZarrinpalPayment.csproj" />
     <ProjectReference Include="..\DataFiller\App.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
