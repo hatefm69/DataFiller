@@ -1,5 +1,6 @@
 ﻿using Common;
 using Microsoft.Extensions.ObjectPool;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace WebFramework.RabbitMQ
