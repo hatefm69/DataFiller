@@ -1,9 +1,13 @@
 ﻿using Autofac;
 using Common;
+using DataFiller.Job;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
 using System;
 using WebFramework.Configuration;
 using WebFramework.MiddleWares;
@@ -22,20 +26,28 @@ namespace DataFiller
         {
             Configuration = configuration;
 
-
-
             _siteSetting = configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
         }
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
 
 
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
-            services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
+            services.AddSingleton<IJobFactory, Job.JobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+            services.AddSingleton<GeneratorData>();
+            services.AddSingleton(
+                new JobSchedule(typeof(GeneratorData),
+                "0/5 * * * * ?"
+                ));
 
-            return services.BuildAutofacServiceProvider(Configuration);
+            services.AddHostedService<QuartzHostedService>();
+
+            //services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
+
+            services.BuildAutofacServiceProvider(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

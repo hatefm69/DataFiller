@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataFiller.Job
 {
-    class JobSchedule
+    public class JobSchedule
     {
         public JobSchedule(Type jobType,string cornExpression)
         {
