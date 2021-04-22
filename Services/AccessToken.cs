@@ -1,5 +1,4 @@
-﻿using Entities.User;
-using System;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Services
@@ -40,8 +39,6 @@ namespace Services
         public string refresh_token { get; set; }
         public string token_type { get; set; }
         public int expires_in { get; set; }
-        public Entities.User.User user { get; set; }
-
         public GoogleAccessToken()
         {
 

@@ -4,6 +4,9 @@ using Autofac.Core.Activators.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
 using Common;
+using Data;
+using Data.Repositories;
+using Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,78 +32,78 @@ namespace WebFramework.Configuration
         }
     }
 
-    internal static class Assemblies
-    {
-        public static readonly Assembly Application = typeof(GetCartQueryHandler).Assembly;
-    }
+    //internal static class Assemblies
+    //{
+    //    public static readonly Assembly Application = typeof(GetCartQueryHandler).Assembly;
+    //}
 
-    public class MediatorModule : Autofac.Module
-    {
-        protected override void Load(ContainerBuilder builder)
-        {
-            builder.RegisterSource(new ScopedContravariantRegistrationSource(typeof(IRequestHandler<,>), typeof(INotificationHandler<>), typeof(IValidator<>)));
-            builder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly).AsImplementedInterfaces();
+    //public class MediatorModule : Autofac.Module
+    //{
+    //    protected override void Load(ContainerBuilder builder)
+    //    {
+    //        builder.RegisterSource(new ScopedContravariantRegistrationSource(typeof(IRequestHandler<,>), typeof(INotificationHandler<>), typeof(IValidator<>)));
+    //        builder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
-            var mediatrOpenTypes = new[]
-            {
-            typeof(IRequestHandler<,>),
-            //typeof(INotificationHandler<>),
-            typeof(IValidator<>)
-        };
+    //        var mediatrOpenTypes = new[]
+    //        {
+    //        typeof(IRequestHandler<,>),
+    //        //typeof(INotificationHandler<>),
+    //        typeof(IValidator<>)
+    //    };
 
-            foreach (var mediatrOpenType in mediatrOpenTypes)
-            {
-                builder
-                    .RegisterAssemblyTypes(Assemblies.Application, ThisAssembly)
-                    .AsClosedTypesOf(mediatrOpenType)
-                    .FindConstructorsWith(new AllConstructorFinder())
-                    .AsImplementedInterfaces();
-            }
+    //        foreach (var mediatrOpenType in mediatrOpenTypes)
+    //        {
+    //            builder
+    //                .RegisterAssemblyTypes(Assemblies.Application, ThisAssembly)
+    //                .AsClosedTypesOf(mediatrOpenType)
+    //                .FindConstructorsWith(new AllConstructorFinder())
+    //                .AsImplementedInterfaces();
+    //        }
 
-            ////////builder.RegisterGeneric(typeof(RequestPostProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
-            ////////builder.RegisterGeneric(typeof(RequestPreProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
+    //        ////////builder.RegisterGeneric(typeof(RequestPostProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
+    //        ////////builder.RegisterGeneric(typeof(RequestPreProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
 
-            builder.Register<ServiceFactory>(ctx =>
-            {
-                var c = ctx.Resolve<IComponentContext>();
-                return t => c.Resolve(t);
-            });
+    //        builder.Register<ServiceFactory>(ctx =>
+    //        {
+    //            var c = ctx.Resolve<IComponentContext>();
+    //            return t => c.Resolve(t);
+    //        });
 
-            builder.RegisterGeneric(typeof(CommandValidationBehavior<,>)).As(typeof(IPipelineBehavior<,>));
-        }
+    //        builder.RegisterGeneric(typeof(CommandValidationBehavior<,>)).As(typeof(IPipelineBehavior<,>));
+    //    }
 
-        private class ScopedContravariantRegistrationSource : IRegistrationSource
-        {
-            private readonly IRegistrationSource _source = new ContravariantRegistrationSource();
-            private readonly List<Type> _types = new List<Type>();
+    //    private class ScopedContravariantRegistrationSource : IRegistrationSource
+    //    {
+    //        private readonly IRegistrationSource _source = new ContravariantRegistrationSource();
+    //        private readonly List<Type> _types = new List<Type>();
 
-            public ScopedContravariantRegistrationSource(params Type[] types)
-            {
-                if (types == null)
-                    throw new ArgumentNullException(nameof(types));
-                if (!types.All(x => x.IsGenericTypeDefinition))
-                    throw new ArgumentException("Supplied types should be generic type definitions");
-                _types.AddRange(types);
-            }
+    //        public ScopedContravariantRegistrationSource(params Type[] types)
+    //        {
+    //            if (types == null)
+    //                throw new ArgumentNullException(nameof(types));
+    //            if (!types.All(x => x.IsGenericTypeDefinition))
+    //                throw new ArgumentException("Supplied types should be generic type definitions");
+    //            _types.AddRange(types);
+    //        }
 
-            public IEnumerable<IComponentRegistration> RegistrationsFor(
-                Service service,
-                Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
-            {
-                var components = _source.RegistrationsFor(service, registrationAccessor);
-                foreach (var c in components)
-                {
-                    var defs = c.Target.Services
-                        .OfType<TypedService>()
-                        .Select(x => x.ServiceType.GetGenericTypeDefinition());
+    //        public IEnumerable<IComponentRegistration> RegistrationsFor(
+    //            Service service,
+    //            Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
+    //        {
+    //            var components = _source.RegistrationsFor(service, registrationAccessor);
+    //            foreach (var c in components)
+    //            {
+    //                var defs = c.Target.Services
+    //                    .OfType<TypedService>()
+    //                    .Select(x => x.ServiceType.GetGenericTypeDefinition());
 
-                    if (defs.Any(_types.Contains))
-                        yield return c;
-                }
-            }
-            public bool IsAdapterForIndividualComponents => _source.IsAdapterForIndividualComponents;
-        }
-    }
+    //                if (defs.Any(_types.Contains))
+    //                    yield return c;
+    //            }
+    //        }
+    //        public bool IsAdapterForIndividualComponents => _source.IsAdapterForIndividualComponents;
+    //    }
+    //}
 
     public class DataAccessModule : Autofac.Module
     {
@@ -191,28 +194,27 @@ namespace WebFramework.Configuration
         {
             //RegisterType > As > Lifetime
             containerBuilder.RegisterGeneric(typeof(Repository<>)).As(typeof(IRepository<>)).InstancePerLifetimeScope();
-            containerBuilder.RegisterType<ProductService>().As<IProductService>().InstancePerLifetimeScope();
-            // رویس زرین پال بابت درگاه
-            containerBuilder.RegisterType<ZarrinpalPaymentService>().As<IZarrinpalPaymentService>().InstancePerLifetimeScope();
+     
+ 
 
             var commonAssembly = typeof(SiteSettings).Assembly;
             var entitiesAssembly = typeof(IEntity).Assembly;
 
             var dataAssembly = typeof(ApplicationDbContext).Assembly;
-            var servicesAssembly = typeof(IDataInitializer).Assembly;
-            var BLAssembly = typeof(IBL).Assembly;
+            //var servicesAssembly = typeof(IDataInitializer).Assembly;
+            //var BLAssembly = typeof(IBL).Assembly;
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ITransientDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerDependency();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ISingletonDependency>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
@@ -226,7 +228,7 @@ namespace WebFramework.Configuration
             //Register Services to Autofac ContainerBuilder
             containerBuilder.AddServices();
 
-            containerBuilder.RegisterModule(new MediatorModule());
+            //containerBuilder.RegisterModule(new MediatorModule());
             containerBuilder.RegisterModule(new DataAccessModule(configuration.GetConnectionString("SqlServer")));
 
             var container = containerBuilder.Build();

@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Common.Utilities;
+using Data.Contracts;
+using Entities;
+//using Entities.User;
+//using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Utilities;
-using Data.Contracts;
-using Entities;
-using Entities.Product;
-//using Entities.User;
-//using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Data
 {
@@ -58,41 +57,6 @@ namespace Data
             modelBuilder.AddRestrictDeleteBehaviorConvention();
             modelBuilder.AddSequentialGuidForIdConvention();
             modelBuilder.AddPluralizingTableNameConvention();
-
-            modelBuilder.Entity<Part>()
-                .HasMany(e => e.Categories)
-                .WithMany(e => e.Parts)
-                .UsingEntity<CategoryPart>(
-                cg => cg
-                    .HasOne(cg => cg.Category)
-                    .WithMany()
-                    .HasForeignKey("CategoriesId"),
-                cg => cg
-                    .HasOne(cg => cg.Part)
-                    .WithMany()
-                    .HasForeignKey("PartsId"))
-                .ToTable("CategoryParts", "product")
-                .HasKey(cg => new { cg.PartsId, cg.CategoriesId });
-
-            modelBuilder.Entity<Part>()
-                .HasMany(e => e.Vehicles)
-                .WithMany(e => e.Parts)
-                .UsingEntity<PartVehicle>(
-                cg => cg
-                    .HasOne(cg => cg.Vehicle)
-                    .WithMany()
-                    .HasForeignKey("VehiclesId"),
-                cg => cg
-                    .HasOne(cg => cg.Part)
-                    .WithMany()
-                    .HasForeignKey("PartsId"))
-                .ToTable("PartVehicles", "product")
-                .HasKey(cg => new { cg.PartsId, cg.VehiclesId });
-
-
-
-
-
         }
 
         public override int SaveChanges()
