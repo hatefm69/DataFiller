@@ -14,8 +14,8 @@ namespace DataFiller.Model
             LastName = lastName;
             FirstName = firstName;
         }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }
+        public string FirstName { get; }
+        public string LastName { get; }
+        public int Age { get; }
     }
 }

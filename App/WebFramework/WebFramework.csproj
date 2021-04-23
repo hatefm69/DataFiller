@@ -45,7 +45,6 @@
     <Compile Remove="Configuration\ApplicationBuilderExtensions.cs" />
     <Compile Remove="Configuration\IdentityConfigurationExtensions.cs" />
     <Compile Remove="Configuration\IdentityErrorDescriberPersian.cs" />
-    <Compile Remove="Configuration\ServiceCollectionExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>

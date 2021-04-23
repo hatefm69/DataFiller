@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using Common;
+using Data;
+using Data.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,21 +28,33 @@ namespace DataFiller
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
 
+            services.AddDbContext(Configuration);
 
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
             services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
 
+            services.AddSingleton<IRpcClientQueue, RpcClientQueue>();
+
             services.BuildAutofacServiceProvider(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IRpcClientQueue rpcClientQueue)
         {
             app.UseCustomExceptionHandler();
 
-            new RpcClientQueue();
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+    
+
+                var dataInitializer = scope.ServiceProvider.GetRequiredService<IRpcClientQueue>();
+
+                //foreach (var dataInitializer in dataInitializers)
+                    dataInitializer.Get();
+            }
 
         }
 

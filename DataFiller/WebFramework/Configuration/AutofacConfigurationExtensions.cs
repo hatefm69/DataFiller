@@ -31,6 +31,7 @@ namespace WebFramework.Configuration
             //var dataAssembly = typeof(ApplicationDbContext).Assembly;
             //var servicesAssembly = typeof(IDataInitializer).Assembly;
             //var BLAssembly = typeof(IBL).Assembly;
+    
 
             containerBuilder.RegisterAssemblyTypes(commonAssembly)//, entitiesAssembly, dataAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()

@@ -1,4 +1,9 @@
-﻿using RabbitMQ.Client;
+﻿using Common;
+using Common.Utilities;
+using Data.Contracts;
+using Entities.Models;
+using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Concurrent;
@@ -9,7 +14,7 @@ namespace WebFramework.RabbitMQ
 {
 
 
-    public class RpcClientQueue
+    public class RpcClientQueue : IRpcClientQueue
     {
         private readonly IConnection connection;
         private readonly IModel channel;
@@ -17,15 +22,23 @@ namespace WebFramework.RabbitMQ
         private readonly EventingBasicConsumer consumer;
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
         private readonly IBasicProperties props;
-
-        public RpcClientQueue()
+        private IUnitOfWork _unitOfWork;
+        private DbSet<Person> _people;
+        public RpcClientQueue(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+            _people = _unitOfWork.Set<Person>();
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            connection = factory.CreateConnection();
+            channel = connection.CreateModel();
 
+
+        }
+        public void Get()
+        {
             try
             {
-                var factory = new ConnectionFactory() { HostName = "localhost" };
-                connection = factory.CreateConnection();
-                channel = connection.CreateModel();
+
 
                 channel.QueueDeclare(queue: "hello",
                                     durable: false,
@@ -39,6 +52,13 @@ namespace WebFramework.RabbitMQ
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
                     Console.WriteLine(" [x] Received {0}", message);
+
+                    var person = message.FromJson<Person>();
+                    _people.Add(person);
+                    _unitOfWork.SaveChanges();
+                    //save database
+
+                    //save redis
                 };
                 channel.BasicConsume(queue: "hello",
                                      autoAck: true,
@@ -54,12 +74,7 @@ namespace WebFramework.RabbitMQ
 
                 Close();
             }
-
         }
-        //public string Get()
-        //{
-
-        //}
 
         private void Close()
         {
