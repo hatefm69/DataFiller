@@ -22,19 +22,19 @@ namespace Data.Repositories
         public async Task<int> Add(Person entity)
         {
             entity.CreateDm = DateTime.Now;
-            var sql = "INSERT INTO Tasks (FirstName, LastName, Age) Values (@FirsName, @LastName, @Age);";
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            var sql = "INSERT INTO People (FirstName, LastName, Age) Values (@FirstName, @LastName, @Age);";
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("SqlServer")))
             {
                 connection.Open();
-                var affectedRows = await connection.ExecuteAsync(sql, entity);
+                var affectedRows =  connection.Execute(sql, entity);
                 return affectedRows;
             }
         }
 
         public async Task<int> Delete(int id)
         {
-            var sql = "DELETE FROM Tasks WHERE Id = @Id;";
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            var sql = "DELETE FROM People WHERE Id = @Id;";
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("SqlServer")))
             {
                 connection.Open();
                 var affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
@@ -44,8 +44,8 @@ namespace Data.Repositories
 
         public async Task<Person> Get(int id)
         {
-            var sql = "SELECT * FROM Tasks WHERE Id = @Id;";
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            var sql = "SELECT * FROM People WHERE Id = @Id;";
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("SqlServer")))
             {
                 connection.Open();
                 var result = await connection.QueryAsync<Person>(sql, new { Id = id });
@@ -55,8 +55,8 @@ namespace Data.Repositories
 
         public async Task<IEnumerable<Person>> GetAll()
         {
-            var sql = "SELECT * FROM Tasks;";
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            var sql = "SELECT * FROM People;";
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("SqlServer")))
             {
                 connection.Open();
                 var result = await connection.QueryAsync<Person>(sql);
@@ -67,8 +67,8 @@ namespace Data.Repositories
         public async Task<int> Update(Person entity)
         {
             entity.LastUpdateDm = DateTime.Now;
-            var sql = "UPDATE Tasks SET FirstName = @FirstName, LastName = @LastName, Age = @Age WHERE Id = @Id;";
-            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            var sql = "UPDATE People SET FirstName = @FirstName, LastName = @LastName, Age = @Age WHERE Id = @Id;";
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("SqlServer")))
             {
                 connection.Open();
                 var affectedRows = await connection.ExecuteAsync(sql, entity);

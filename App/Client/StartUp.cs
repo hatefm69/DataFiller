@@ -53,17 +53,7 @@ namespace DataFiller
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IRpcClientQueue rpcClientQueue)
         {
             app.UseCustomExceptionHandler();
-
             rpcClientQueue.Get();
-            //using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            //{
-
-
-            //    var dataInitializer = scope.ServiceProvider.GetRequiredService<IRpcClientQueue>();
-
-            //    //foreach (var dataInitializer in dataInitializers)
-            //        dataInitializer.Get();
-            //}
 
         }
 
