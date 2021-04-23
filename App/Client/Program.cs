@@ -23,7 +23,6 @@ namespace DataFiller
         public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
             Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory()) //<-like yours
-            .ConfigureLogging((context, builder) => builder.AddSerilog())
             .ConfigureAppConfiguration(builder =>
             {
                 builder.Sources.Clear();
@@ -31,7 +30,7 @@ namespace DataFiller
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseUrls("https://*:8081", "http://*:8080");
+        
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSerilog((builder, logger) =>
                 {
