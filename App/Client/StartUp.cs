@@ -2,10 +2,13 @@
 using Common;
 using Data;
 using Data.Contracts;
+using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services;
+using System;
 using WebFramework.Configuration;
 using WebFramework.MiddleWares;
 using WebFramework.RabbitMQ;
@@ -28,17 +31,22 @@ namespace DataFiller
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
+     
+ 
+            //services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
 
             services.AddDbContext(Configuration);
 
+            services.AddTransient<IPersonRepository, PersonRepository>();
+            services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
+
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
-            services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
 
-            services.AddSingleton<IRpcClientQueue, RpcClientQueue>();
 
             services.BuildAutofacServiceProvider(Configuration);
+            services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
+            services.AddSingleton<IRpcClientQueue, RpcClientQueue>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,15 +54,16 @@ namespace DataFiller
         {
             app.UseCustomExceptionHandler();
 
-            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-    
+            rpcClientQueue.Get();
+            //using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            //{
 
-                var dataInitializer = scope.ServiceProvider.GetRequiredService<IRpcClientQueue>();
 
-                //foreach (var dataInitializer in dataInitializers)
-                    dataInitializer.Get();
-            }
+            //    var dataInitializer = scope.ServiceProvider.GetRequiredService<IRpcClientQueue>();
+
+            //    //foreach (var dataInitializer in dataInitializers)
+            //        dataInitializer.Get();
+            //}
 
         }
 

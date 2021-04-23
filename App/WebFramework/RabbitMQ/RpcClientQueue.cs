@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Utilities;
+using Data;
 using Data.Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
@@ -22,12 +23,13 @@ namespace WebFramework.RabbitMQ
         private readonly EventingBasicConsumer consumer;
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
         private readonly IBasicProperties props;
-        private IUnitOfWork _unitOfWork;
-        private DbSet<Person> _people;
-        public RpcClientQueue(IUnitOfWork unitOfWork)
+        private IUnitOfWorkDapper _unitOfWork;
+      
+        public RpcClientQueue(IUnitOfWorkDapper unitOfWork)
+          //  , ISqlConnectionFactory sqlConnectionFactory)
         {
             _unitOfWork = unitOfWork;
-            _people = _unitOfWork.Set<Person>();
+          
             var factory = new ConnectionFactory() { HostName = "localhost" };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -54,8 +56,8 @@ namespace WebFramework.RabbitMQ
                     Console.WriteLine(" [x] Received {0}", message);
 
                     var person = message.FromJson<Person>();
-                    _people.Add(person);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.People.Add(person);
+                   
                     //save database
 
                     //save redis

@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -143,22 +144,22 @@ namespace WebFramework.Configuration
             //    .As<IValueConverterSelector>()
             //    .InstancePerLifetimeScope();
 
-            builder
-                .Register(c =>
-                {
-                    var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-                    dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
-                    //dbContextOptionsBuilder
-                    //    .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
+            //builder
+            //    .Register(c =>
+            //    {
+            //        var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            //        dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
+            //        //dbContextOptionsBuilder
+            //        //    .ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
 
-                    return new ApplicationDbContext(dbContextOptionsBuilder.Options);
-                })
-                .AsSelf()
-                .As<DbContext>()
-                .InstancePerLifetimeScope();
+            //        return new ApplicationDbContext(dbContextOptionsBuilder.Options);
+            //    })
+            //    .AsSelf()
+            //    .As<DbContext>()
+            //    .InstancePerLifetimeScope();
         }
     }
-
+ 
     public class SqlConnectionFactory : ISqlConnectionFactory, IDisposable
     {
         private readonly string _connectionString;
@@ -188,14 +189,16 @@ namespace WebFramework.Configuration
             }
         }
     }
-
     public static class AutofacConfigurationExtensions
     {
         public static void AddServices(this ContainerBuilder containerBuilder)
         {
             //RegisterType > As > Lifetime
             containerBuilder.RegisterGeneric(typeof(Repository<>)).As(typeof(IRepository<>)).InstancePerLifetimeScope();
-            
+
+
+
+
 
 
             var commonAssembly = typeof(SiteSettings).Assembly;
@@ -205,7 +208,8 @@ namespace WebFramework.Configuration
             //var servicesAssembly = typeof(IDataInitializer).Assembly;
             //var BLAssembly = typeof(IBL).Assembly;
             var webFrameworkAssembly = typeof(IRpcClientQueue).Assembly;
-
+             
+         
             containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()
                 .AsImplementedInterfaces()
@@ -230,8 +234,13 @@ namespace WebFramework.Configuration
             //Register Services to Autofac ContainerBuilder
             containerBuilder.AddServices();
 
+
+            containerBuilder.RegisterType<SqlConnectionFactory>()
+               .As<ISqlConnectionFactory>()
+               .WithParameter("connectionString", configuration.GetConnectionString("SqlServer"))
+               .InstancePerLifetimeScope();
             //containerBuilder.RegisterModule(new MediatorModule());
-            containerBuilder.RegisterModule(new DataAccessModule(configuration.GetConnectionString("SqlServer")));
+            //containerBuilder.RegisterModule(new DataAccessModule(configuration.GetConnectionString("SqlServer")));
 
             var container = containerBuilder.Build();
 
