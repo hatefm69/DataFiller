@@ -12,7 +12,6 @@ namespace DataFiller
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            //Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console().CreateLogger();
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
@@ -25,7 +24,6 @@ namespace DataFiller
         public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
             Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory()) //<-like yours
-                                                                            //.UseSerilog()
             .ConfigureLogging((context, builder) => builder.AddSerilog())
             .ConfigureAppConfiguration(builder =>
             {
@@ -49,8 +47,7 @@ namespace DataFiller
 
                     }
                 });
-            })
-            ;
+            });
     }
 
 }

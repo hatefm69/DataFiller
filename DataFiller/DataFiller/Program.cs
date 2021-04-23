@@ -37,8 +37,6 @@ namespace DataFiller
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
@@ -51,9 +49,7 @@ namespace DataFiller
         public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
             Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory()) //<-like yours
-            .UseSerilog()
             .ConfigureLogging((context, builder) => builder.AddSerilog())
-
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddHostedService<Worker>()
@@ -71,14 +67,28 @@ namespace DataFiller
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
+                webBuilder.UseUrls("https://*:8081", "http://*:8080");
                 webBuilder.UseStartup<Startup>();
+                webBuilder.UseSerilog((builder, logger) =>
+                {
+                    if (builder.HostingEnvironment.IsDevelopment())
+                    {
+                        logger.WriteTo.Console().MinimumLevel.Information();
+                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
+                    }
+                    else if (builder.HostingEnvironment.IsProduction())
+                    {
+                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
+
+                    }
+                });
             })
-              //.ConfigureWebHost(config =>
-              //{
-              //    config.UseUrls("http://*:5050");
-              //})
+            //.ConfigureWebHost(config =>
+            //{
+            //    config.UseUrls("http://*:5050");
+            //})
             ;
-           // .UseWindowsService();
+        // .UseWindowsService();
     }
 
 }
