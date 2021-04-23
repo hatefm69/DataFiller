@@ -49,6 +49,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Api\ApiResult.cs" />
+    <Compile Include="Middlewares\CustomExceptionHandlerMiddleware.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="6.1.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.0.1" />

@@ -19,8 +19,10 @@ namespace WebFramework.RabbitMQ
             services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>(x=>new RabbitModelPooledObjectPolicy(rabbitConfig));
 
-            services.AddSingleton<IRabbitManager, RabbitManager>();
-
+            //services.AddSingleton<IRabbitManager, RabbitManager>();
+            services.AddSingleton<IRabbitManager, RabbitManagerQueue>();
+            //services.AddSingleton<IRabbitManager, RpcClientQueue>();
+            
             return services;
         }
     }

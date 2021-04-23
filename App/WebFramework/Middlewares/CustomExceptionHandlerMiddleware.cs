@@ -13,8 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BusinessLayout.Configuration.Validation;
-using FluentValidation;
 using WebFramework.Api;
 
 namespace WebFramework.MiddleWares
@@ -81,7 +79,7 @@ namespace WebFramework.MiddleWares
                         dic.Add("InnerException.StackTrace", exception.InnerException.StackTrace);
                     }
 
-                    var settings = new JsonSerializerSettings {ContractResolver = new LowercaseContractResolver()};
+                    var settings = new JsonSerializerSettings { ContractResolver = new LowercaseContractResolver() };
 
                     if (exception.AdditionalData != null)
                         dic.Add("AdditionalData",
@@ -110,7 +108,7 @@ namespace WebFramework.MiddleWares
             }
             catch (Exception exception)
             {
-               _logger.LogError(exception, exception.Message);
+                _logger.LogError(exception, exception.Message);
 
                 if (_env.IsDevelopment())
                 {
