@@ -1,5 +1,7 @@
-﻿using DataFiller.Model;
+﻿using Common.Utilities;
+using DataFiller.Model;
 using Quartz;
+using System;
 using System.Threading.Tasks;
 using WebFramework.RabbitMQ;
 
@@ -19,7 +21,7 @@ namespace DataFiller.Job
             //add to rabbitMq
             var person = new Person("hatef", "mahdizadeh", 31);
             _rabbitManager.Publish<Person>(person, "direct_logs", "direct", "");
-
+            Console.WriteLine(person.ToJson());
             return Task.CompletedTask;
         }
     }

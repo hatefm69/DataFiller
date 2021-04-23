@@ -6,9 +6,11 @@ using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using ServiceStack.Redis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace WebFramework.RabbitMQ
@@ -49,18 +51,25 @@ namespace WebFramework.RabbitMQ
                                     arguments: null);
 
                 var consumer = new EventingBasicConsumer(channel);
+                var index = 0;
                 consumer.Received += (model, ea) =>
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
                     Console.WriteLine(" [x] Received {0}", message);
 
+                    #region SqlServer
                     var person = message.FromJson<Person>();
                     _unitOfWork.People.Add(person);
-                   
-                    //save database
-
-                    //save redis
+                    #endregion
+                    index++;
+                    #region Redis
+                    using (var connection = new RedisClient())
+                    {
+                        var count= connection.Keys("people*").Length;
+                        var result= connection.Set($"people:Id:{count}",person);
+                    }
+                    #endregion
                 };
                 channel.BasicConsume(queue: "hello",
                                      autoAck: true,
