@@ -11,7 +11,6 @@ namespace DataFiller
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)

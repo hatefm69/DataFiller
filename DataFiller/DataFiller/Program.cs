@@ -83,12 +83,10 @@ namespace DataFiller
                     }
                 });
             })
-            //.ConfigureWebHost(config =>
-            //{
-            //    config.UseUrls("http://*:5050");
-            //})
-            ;
-        // .UseWindowsService();
+            .ConfigureWebHost(config =>
+            {
+                config.UseUrls("http://*:5050");
+            }).UseWindowsService();
     }
 
 }
