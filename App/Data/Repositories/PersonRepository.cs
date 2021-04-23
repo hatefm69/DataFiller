@@ -22,7 +22,7 @@ namespace Data.Repositories
         public async Task<int> Add(Person entity)
         {
             entity.CreateDm = DateTime.Now;
-            var sql = "INSERT INTO Tasks (Name, Description, Status, DueDate, DateCreated) Values (@Name, @Description, @Status, @DueDate, @DateCreated);";
+            var sql = "INSERT INTO Tasks (FirstName, LastName, Age) Values (@FirsName, @LastName, @Age);";
             using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
@@ -67,7 +67,7 @@ namespace Data.Repositories
         public async Task<int> Update(Person entity)
         {
             entity.LastUpdateDm = DateTime.Now;
-            var sql = "UPDATE Tasks SET Name = @Name, Description = @Description, Status = @Status, DueDate = @DueDate, DateModified = @DateModified WHERE Id = @Id;";
+            var sql = "UPDATE Tasks SET FirstName = @FirstName, LastName = @LastName, Age = @Age WHERE Id = @Id;";
             using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 connection.Open();
