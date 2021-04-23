@@ -12,7 +12,7 @@ namespace DataFiller
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-
+            //Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console().CreateLogger();
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
@@ -25,16 +25,30 @@ namespace DataFiller
         public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
             Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory()) //<-like yours
-            .UseSerilog()
+                                                                            //.UseSerilog()
             .ConfigureLogging((context, builder) => builder.AddSerilog())
             .ConfigureAppConfiguration(builder =>
             {
                 builder.Sources.Clear();
                 builder.AddConfiguration(configuration);
             })
-            .ConfigureWebHostDefaults(webBuilder => {
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
                 webBuilder.UseUrls("https://*:8081", "http://*:8080");
-                webBuilder.UseStartup<Startup>(); })
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseSerilog((builder, logger) =>
+                {
+                    if (builder.HostingEnvironment.IsDevelopment())
+                    {
+                        logger.WriteTo.Console().MinimumLevel.Information();
+                    }
+                    else
+                        if (builder.HostingEnvironment.IsProduction())
+                    {
+
+                    }
+                });
+            })
             ;
     }
 
