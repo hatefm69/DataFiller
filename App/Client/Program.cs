@@ -41,10 +41,11 @@ namespace DataFiller
                     if (builder.HostingEnvironment.IsDevelopment())
                     {
                         logger.WriteTo.Console().MinimumLevel.Information();
+                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
                     }
-                    else
-                        if (builder.HostingEnvironment.IsProduction())
+                    else if (builder.HostingEnvironment.IsProduction())
                     {
+                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
 
                     }
                 });

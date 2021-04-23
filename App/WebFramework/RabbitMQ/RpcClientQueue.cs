@@ -27,12 +27,12 @@ namespace WebFramework.RabbitMQ
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
         private readonly IBasicProperties props;
         private IUnitOfWorkDapper _unitOfWork;
-        private ILogger _logger;
-        public RpcClientQueue(IUnitOfWorkDapper unitOfWork)//, ILogger logger)
+        private ILogger<RpcClientQueue> _logger;
+        public RpcClientQueue(IUnitOfWorkDapper unitOfWork, ILogger<RpcClientQueue> logger)
         //  , ISqlConnectionFactory sqlConnectionFactory)
         {
             _unitOfWork = unitOfWork;
-            //_logger = logger;
+            _logger = logger;
             var factory = new ConnectionFactory() { HostName = "localhost" };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -44,7 +44,7 @@ namespace WebFramework.RabbitMQ
             try
             {
 
-                //_logger.LogInformation("Listen To RabbitMQ");
+                _logger.LogError("Listen To RabbitMQ");
                 channel.QueueDeclare(queue: "hello",
                                     durable: false,
                                     exclusive: false,
@@ -55,7 +55,7 @@ namespace WebFramework.RabbitMQ
                 var index = 0;
                 consumer.Received += (model, ea) =>
                 {
-                    //_logger.LogInformation("Received From RabbitMQ");
+                    _logger.LogError("Received From RabbitMQ");
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
                     //Console.WriteLine(" [x] Received {0}", message);
@@ -63,7 +63,7 @@ namespace WebFramework.RabbitMQ
                     #region SqlServer
                     var person = message.FromJson<Person>();
                     _unitOfWork.People.Add(person);
-                    //_logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
+                    _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
                     #endregion
                     index++;
                     #region Redis
@@ -72,7 +72,7 @@ namespace WebFramework.RabbitMQ
                         var count = connection.Keys("people*").Length;
                         var result = connection.Set($"people:Id:{count}", person);
 
-                        //_logger.LogInformation($"Added To Redis people:Id:{count} => {person.ToJson()}");
+                        _logger.LogError($"Added To Redis people:Id:{count} => {person.ToJson()}");
                     }
                     #endregion
                 };
