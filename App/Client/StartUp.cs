@@ -39,6 +39,9 @@ namespace DataFiller
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCustomExceptionHandler();
+
+            new RpcClientQueue();
+
         }
 
 

@@ -32,7 +32,10 @@ namespace DataFiller
                 builder.Sources.Clear();
                 builder.AddConfiguration(configuration);
             })
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+            .ConfigureWebHostDefaults(webBuilder => {
+                webBuilder.UseUrls("https://*:8081", "http://*:8080");
+                webBuilder.UseStartup<Startup>(); })
+            ;
     }
 
 }
