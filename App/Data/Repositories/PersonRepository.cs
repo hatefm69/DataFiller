@@ -13,19 +13,18 @@ using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
-    public class PersonRepository : IPersonRepository 
+    public class PersonRepository : IPersonRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
         public PersonRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
             _sqlConnectionFactory = sqlConnectionFactory;
         }
-        public async Task<int> Add(Person entity)
+        public async Task<Person> Add(Person entity)
         {
-            entity.CreateDm = DateTime.Now;
             var connection = _sqlConnectionFactory.GetOpenConnection();
-            var affectedRows = connection.Execute(DatabaseStoreProcedure.InsertPerson, entity, commandType: System.Data.CommandType.StoredProcedure);
-            return affectedRows;
+            var inserted =await connection.QuerySingleAsync<Person>(DatabaseStoreProcedure.InsertPerson, new { entity.Age, entity.FirstName, entity.LastName }, commandType: System.Data.CommandType.StoredProcedure);
+            return inserted;
         }
 
         public async Task<int> Delete(int id)
@@ -49,12 +48,11 @@ namespace Data.Repositories
             return result;
         }
 
-        public async Task<int> Update(Person entity)
+        public async Task<Person> Update(Person entity)
         {
-            entity.LastUpdateDm = DateTime.Now;
             var connection = _sqlConnectionFactory.GetOpenConnection();
-            var affectedRows = await connection.ExecuteAsync(DatabaseStoreProcedure.UpdatePerson, entity, commandType: System.Data.CommandType.StoredProcedure);
-            return affectedRows;
+            var inserted =await connection.QuerySingleAsync<Person>(DatabaseStoreProcedure.UpdatePerson, entity, commandType: System.Data.CommandType.StoredProcedure);
+            return inserted;
         }
     }
 }

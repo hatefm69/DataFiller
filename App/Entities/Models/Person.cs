@@ -8,19 +8,20 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Person:BaseEntity, IEntityApp
+    public class Person//:BaseEntity, IEntityApp
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }
+        public int Id { get; set; }
     }
-    internal class ContactTypeConfiguration : IEntityTypeConfiguration<Person>
-    {
-        public void Configure(EntityTypeBuilder<Person> builder)
-        {
-            builder.Property(p => p.FirstName).HasMaxLength(100);
-            builder.Property(p => p.LastName).HasMaxLength(100);
-            builder.Property(p => p.Age).HasDefaultValue(10);
-        }
-    }
+    //internal class ContactTypeConfiguration : IEntityTypeConfiguration<Person>
+    //{
+    //    public void Configure(EntityTypeBuilder<Person> builder)
+    //    {
+    //        builder.Property(p => p.FirstName).HasMaxLength(100);
+    //        builder.Property(p => p.LastName).HasMaxLength(100);
+    //        builder.Property(p => p.Age).HasDefaultValue(10);
+    //    }
+    //}
 }

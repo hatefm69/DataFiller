@@ -64,7 +64,7 @@ namespace WebFramework.RabbitMQ
 
         public override Task ExecuteInScope(IServiceProvider serviceProvider, CancellationToken stoppingToken)
         {
-            consumer.Received += (model, ea) =>
+            consumer.Received += async(model, ea) =>
             {
                 _logger.LogError("Received From RabbitMQ");
                 var body = ea.Body.ToArray();
@@ -73,7 +73,7 @@ namespace WebFramework.RabbitMQ
 
                 #region SqlServer
                 var person = message.FromJson<Person>();
-                _unitOfWork.People.Add(person);
+                person=await _unitOfWork.People.Add(person);
                 _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
                 #endregion
                 #region Redis
