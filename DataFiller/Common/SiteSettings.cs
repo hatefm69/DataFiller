@@ -23,7 +23,13 @@
         public string DomainFile { get; set; }
         public string DataBaseName { get; set; }
         public string UriTokenService { get; set; }
+        public Quartz Quartz { get; set; }
     }
+    public class Quartz
+    {
+        public string cornExpression { get; set; }
+    }
+
 
     public class IdentitySettings
     {

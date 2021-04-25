@@ -67,19 +67,10 @@ namespace DataFiller
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseSerilog((builder, logger) =>
-                {
-                    if (builder.HostingEnvironment.IsDevelopment())
-                    {
-                        logger.WriteTo.Console().MinimumLevel.Information();
-                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
-                    }
-                    else if (builder.HostingEnvironment.IsProduction())
-                    {
-                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
-
-                    }
-                });
+                webBuilder.UseSerilog((hostingContext, loggerConfig) =>
+                loggerConfig.ReadFrom
+                .Configuration(hostingContext.Configuration)
+            );
             })
             .ConfigureWebHost(config =>
             {

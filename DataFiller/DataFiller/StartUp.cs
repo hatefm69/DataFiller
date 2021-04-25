@@ -40,7 +40,7 @@ namespace DataFiller
             services.AddSingleton<GeneratorData>();
             services.AddSingleton(
                 new JobSchedule(typeof(GeneratorData),
-                "0/5 * * * * ?"
+             _siteSetting.Quartz.cornExpression
                 ));
 
             services.AddHostedService<QuartzHostedService>();
