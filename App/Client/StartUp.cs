@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Data;
 using Data.Contracts;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -26,8 +27,7 @@ namespace DataFiller
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext(Configuration);
-
+            services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer"))) ;
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
 

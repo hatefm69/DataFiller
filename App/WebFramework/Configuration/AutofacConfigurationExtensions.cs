@@ -5,6 +5,7 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
 using Common;
 using Data;
+using Data.Contracts;
 using Data.Repositories;
 using Entities;
 using MediatR;
@@ -123,10 +124,14 @@ namespace WebFramework.Configuration
                 .WithParameter("connectionString", _databaseConnectionString)
                 .InstancePerLifetimeScope();
 
-            //builder.RegisterType<UnitOfWork>()
-            //    .As<IUnitOfWork>()
-            //    .InstancePerLifetimeScope();
 
+            builder.RegisterType<PersonRepository>()
+             .As<IPersonRepository>()
+             .InstancePerLifetimeScope();
+
+            builder.RegisterType<UnitOfWorkDapper>()
+                .As<IUnitOfWorkDapper>()
+                .InstancePerLifetimeScope();
 
             //builder.RegisterType<CustomerRepository>()
             //    .As<ICustomerRepository>()
@@ -235,12 +240,10 @@ namespace WebFramework.Configuration
             containerBuilder.AddServices();
 
 
-            containerBuilder.RegisterType<SqlConnectionFactory>()
-               .As<ISqlConnectionFactory>()
-               .WithParameter("connectionString", configuration.GetConnectionString("SqlServer"))
-               .InstancePerLifetimeScope();
+     
+
             //containerBuilder.RegisterModule(new MediatorModule());
-            //containerBuilder.RegisterModule(new DataAccessModule(configuration.GetConnectionString("SqlServer")));
+            containerBuilder.RegisterModule(new DataAccessModule(configuration.GetConnectionString("SqlServer")));
 
             var container = containerBuilder.Build();
 
