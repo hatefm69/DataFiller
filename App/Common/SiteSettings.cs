@@ -23,10 +23,10 @@
         public string DomainFile { get; set; }
         public string DataBaseName { get; set; }
         public string UriTokenService { get; set; }
-        public RedisSetting Redis { get; set; }
+        public RedisSettings Redis { get; set; }
     }
 
-    public class RedisSetting
+    public class RedisSettings
     {
         public string Host { get; set; }
         public int Port { get; set; }
@@ -72,5 +72,6 @@
         public int Port { get; set; } = 5672;
 
         public string VHost { get; set; } = "/";
+        public string QueueName { get; set; }
     }
 }
