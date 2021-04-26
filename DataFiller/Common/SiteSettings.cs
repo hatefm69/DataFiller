@@ -70,5 +70,6 @@
         public int Port { get; set; } = 5672;
 
         public string VHost { get; set; } = "/";
+        public string QueueName { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using RabbitMQ.Client;
+﻿using Common;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Concurrent;
@@ -11,23 +13,35 @@ namespace WebFramework.RabbitMQ
 
     public class RpcClientQueue
     {
+        private readonly string _queueName;
         private readonly IConnection connection;
         private readonly IModel channel;
         private readonly string replyQueueName;
         private readonly EventingBasicConsumer consumer;
         private readonly BlockingCollection<string> respQueue = new BlockingCollection<string>();
         private readonly IBasicProperties props;
+        private SiteSettings _siteSettings;
 
-        public RpcClientQueue()
+        public RpcClientQueue(IOptions<SiteSettings> siteSettings)
         {
-
+            _siteSettings = siteSettings.Value;
             try
             {
-                var factory = new ConnectionFactory() { HostName = "localhost" };
+                var factory = new ConnectionFactory()
+                {
+                    HostName = _siteSettings.RabbitMQSettings.HostName,
+                    Password = _siteSettings.RabbitMQSettings.Password,
+                    Port = _siteSettings.RabbitMQSettings.Port,
+                    UserName = _siteSettings.RabbitMQSettings.UserName,
+                    DispatchConsumersAsync = true
+                };
+
+                _queueName = _siteSettings.RabbitMQSettings.QueueName;
+
                 connection = factory.CreateConnection();
                 channel = connection.CreateModel();
 
-                channel.QueueDeclare(queue: "hello",
+                channel.QueueDeclare(queue: _queueName,
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -40,7 +54,7 @@ namespace WebFramework.RabbitMQ
                     var message = Encoding.UTF8.GetString(body);
                     Console.WriteLine(" [x] Received {0}", message);
                 };
-                channel.BasicConsume(queue: "hello",
+                channel.BasicConsume(queue: _queueName,
                                      autoAck: true,
                                      consumer: consumer);
             }
