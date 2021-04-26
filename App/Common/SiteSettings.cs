@@ -23,6 +23,14 @@
         public string DomainFile { get; set; }
         public string DataBaseName { get; set; }
         public string UriTokenService { get; set; }
+        public RedisSetting Redis { get; set; }
+    }
+
+    public class RedisSetting
+    {
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string Key { get; set; }
     }
 
     public class IdentitySettings

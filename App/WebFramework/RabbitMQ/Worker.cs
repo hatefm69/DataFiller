@@ -1,9 +1,11 @@
-﻿using Common.Utilities;
+﻿using Common;
+using Common.Utilities;
 using Data.Contracts;
 using Entities.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using ServiceStack.Redis;
@@ -37,14 +39,16 @@ namespace WebFramework.RabbitMQ
 
     public class Worker : ScopedBackgroundService
     {
+        private readonly SiteSettings _siteSettings;
         private readonly ILogger<Worker> _logger;
         private readonly IUnitOfWorkDapper _unitOfWork;
         private IConnection connection;
         private IModel channel;
         private EventingBasicConsumer consumer;
 
-        public Worker(ILogger<Worker> logger, IUnitOfWorkDapper unitOfWork, IServiceScopeFactory serviceScopeFactory):base(serviceScopeFactory)
+        public Worker(ILogger<Worker> logger, IOptions<SiteSettings> siteSettings, IUnitOfWorkDapper unitOfWork, IServiceScopeFactory serviceScopeFactory):base(serviceScopeFactory)
         {
+            _siteSettings = siteSettings.Value;
             _logger = logger;
             _unitOfWork = unitOfWork;
             var factory = new ConnectionFactory() { HostName = "localhost" };
@@ -77,12 +81,12 @@ namespace WebFramework.RabbitMQ
                 _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
                 #endregion
                 #region Redis
-                using (var connection = new RedisClient())
+                using (var connection = new RedisClient(_siteSettings.Redis.Host,_siteSettings.Redis.Port))
                 {
-                    var count = connection.Keys("people*").Length;
-                    var result = connection.Set($"people:Id:{count}", person);
+                    var count = connection.Keys($"{_siteSettings.Redis.Key}*").Length;
+                    var result = connection.Set($"{_siteSettings.Redis.Key}:Id:{count}", person);
 
-                    _logger.LogError($"Added To Redis people:Id:{count} => {person.ToJson()}");
+                    _logger.LogError($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
                 }
                 #endregion
             };
