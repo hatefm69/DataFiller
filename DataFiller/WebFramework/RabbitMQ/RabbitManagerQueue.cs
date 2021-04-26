@@ -1,5 +1,7 @@
-﻿using Common.Utilities;
+﻿using Common;
+using Common.Utilities;
 using Microsoft.Extensions.ObjectPool;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System;
 using System.Text;
@@ -14,10 +16,14 @@ namespace WebFramework.RabbitMQ
 
     public class RabbitManagerQueue : IRabbitManager
     {
+        private readonly SiteSettings _siteSettings;
+        private readonly string queueName;
         private readonly DefaultObjectPool<IModel> _objectPool;
 
-        public RabbitManagerQueue(IPooledObjectPolicy<IModel> objectPolicy)
+        public RabbitManagerQueue(IPooledObjectPolicy<IModel> objectPolicy, IOptions<SiteSettings> siteSettings)
         {
+            _siteSettings = siteSettings.Value;
+            queueName = _siteSettings.RabbitMQSettings.QueueName;
             _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 2);
         }
 
@@ -32,7 +38,7 @@ namespace WebFramework.RabbitMQ
             try
             {
 
-                channel.QueueDeclare(queue: "hello",
+                channel.QueueDeclare(queue: queueName,
                                durable: false,
                                exclusive: false,
                                autoDelete: false,
@@ -42,7 +48,7 @@ namespace WebFramework.RabbitMQ
                 var body = Encoding.UTF8.GetBytes(message.ToJson());
 
                 channel.BasicPublish(exchange: "",
-                                     routingKey: "hello",
+                                     routingKey: queueName,
                                      basicProperties: null,
                                      body: body);
 
