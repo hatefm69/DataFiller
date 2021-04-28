@@ -67,7 +67,7 @@ namespace WebFramework.RabbitMQ
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
 
-            _logger.LogError("Listen To RabbitMQ");
+            _logger.LogInformation("Listen To RabbitMQ");
             channel.QueueDeclare(queue: _queueName,
                                 durable: false,
                                 exclusive: false,
@@ -84,7 +84,7 @@ namespace WebFramework.RabbitMQ
            {
                try
                {
-                   _logger.LogError("Received From RabbitMQ");
+                   _logger.LogInformation("Received From RabbitMQ");
                    var body = ea.Body.ToArray();
                    var message = Encoding.UTF8.GetString(body);
                     //Console.WriteLine(" [x] Received {0}", message);
@@ -92,7 +92,7 @@ namespace WebFramework.RabbitMQ
                     #region SqlServer
                     var person = message.FromJson<Person>();
                    person = await _unitOfWork.People.Add(person);
-                   _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
+                   _logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
                     #endregion
                     #region Redis
                     using (var connection = new RedisClient(_siteSettings.Redis.Host, _siteSettings.Redis.Port))
@@ -100,7 +100,7 @@ namespace WebFramework.RabbitMQ
                        var count = connection.Keys($"{_siteSettings.Redis.Key}*").Length;
                        var result = connection.Set($"{_siteSettings.Redis.Key}:Id:{count}", person);
 
-                       _logger.LogError($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
+                       _logger.LogInformation($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
                    }
                     #endregion
 
