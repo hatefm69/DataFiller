@@ -1,9 +1,11 @@
 ﻿using Autofac.Extensions.DependencyInjection;
+using Common.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using WebFramework;
 
 namespace DataFiller
 {
@@ -11,13 +13,21 @@ namespace DataFiller
     {
         static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .AddJsonFile("appsettings.json")
-                .Build();
+            try
+            {
+                var configuration = new ConfigurationBuilder()
+                    .AddEnvironmentVariables()
+                    .AddCommandLine(args)
+                    .AddJsonFile("appsettings.json")
+                    .Build();
 
-            CreateHostBuilder(args, configuration).Build().Run();
+                CreateHostBuilder(args, configuration).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlerStartApp.WriteInFile(ex);
+                Console.WriteLine(ex.ToJson());
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
@@ -30,21 +40,14 @@ namespace DataFiller
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
-        
                 webBuilder.UseStartup<Startup>();
-                webBuilder.UseSerilog((builder, logger) =>
-                {
-                    if (builder.HostingEnvironment.IsDevelopment())
-                    {
-                        logger.WriteTo.Console().MinimumLevel.Information();
-                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
-                    }
-                    else if (builder.HostingEnvironment.IsProduction())
-                    {
-                        logger.WriteTo.Elasticsearch().MinimumLevel.Information();
-
-                    }
-                });
+                webBuilder.UseSerilog((hostingContext, loggerConfig) =>
+                loggerConfig.ReadFrom
+                .Configuration(hostingContext.Configuration));
+            })
+            .ConfigureWebHost(config =>
+            {
+                config.UseUrls("http://*:5051");
             });
     }
 

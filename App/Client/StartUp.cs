@@ -5,6 +5,7 @@ using Data.Contracts;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebFramework.Configuration;
@@ -30,6 +31,8 @@ namespace DataFiller
             services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer"))) ;
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
+
+            //services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 

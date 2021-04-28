@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using Entities.Models;
@@ -49,6 +50,8 @@ namespace WebFramework.RabbitMQ
 
         public Worker(ILogger<Worker> logger, IOptions<SiteSettings> siteSettings, IUnitOfWorkDapper unitOfWork, IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
         {
+
+
             _siteSettings = siteSettings.Value;
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -59,7 +62,7 @@ namespace WebFramework.RabbitMQ
                 Password = _siteSettings.RabbitMQSettings.Password,
                 Port = _siteSettings.RabbitMQSettings.Port,
                 UserName = _siteSettings.RabbitMQSettings.UserName,
-                 DispatchConsumersAsync = true
+                DispatchConsumersAsync = true
             };
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -77,28 +80,36 @@ namespace WebFramework.RabbitMQ
 
         public override Task ExecuteInScope(IServiceProvider serviceProvider, CancellationToken stoppingToken)
         {
-             consumer.Received += async(model, ea) =>
-            {
-                _logger.LogError("Received From RabbitMQ");
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                //Console.WriteLine(" [x] Received {0}", message);
+            consumer.Received += async (model, ea) =>
+           {
+               try
+               {
+                   _logger.LogError("Received From RabbitMQ");
+                   var body = ea.Body.ToArray();
+                   var message = Encoding.UTF8.GetString(body);
+                    //Console.WriteLine(" [x] Received {0}", message);
 
-                #region SqlServer
-                var person = message.FromJson<Person>();
-                person =await _unitOfWork.People.Add(person);
-                _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
-                #endregion
-                #region Redis
-                using (var connection = new RedisClient(_siteSettings.Redis.Host, _siteSettings.Redis.Port))
-                {
-                    var count = connection.Keys($"{_siteSettings.Redis.Key}*").Length;
-                    var result = connection.Set($"{_siteSettings.Redis.Key}:Id:{count}", person);
+                    #region SqlServer
+                    var person = message.FromJson<Person>();
+                   person = await _unitOfWork.People.Add(person);
+                   _logger.LogError($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
+                    #endregion
+                    #region Redis
+                    using (var connection = new RedisClient(_siteSettings.Redis.Host, _siteSettings.Redis.Port))
+                   {
+                       var count = connection.Keys($"{_siteSettings.Redis.Key}*").Length;
+                       var result = connection.Set($"{_siteSettings.Redis.Key}:Id:{count}", person);
 
-                    _logger.LogError($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
+                       _logger.LogError($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
+                   }
+                    #endregion
+
                 }
-                #endregion
-            };
+               catch (Exception ex)
+               {
+                   _logger.LogError(ex.ToJson());
+               }
+           };
             channel.BasicConsume(queue: _queueName,
                                  autoAck: true,
                                  consumer: consumer);
