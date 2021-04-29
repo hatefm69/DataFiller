@@ -31,6 +31,8 @@ namespace DataFiller
             services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer"))) ;
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
+            services.AddTransient<IRedisSaveDataStrategy, RedisSaveDataStrategy>();
+            services.AddTransient<ISqlServerSaveDataStrategy, SqlServerSaveDataStrategy>();
 
             //services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 

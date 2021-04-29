@@ -15,7 +15,7 @@ namespace WebFramework
 
         private static void WriteInFile(Exception ex, string errorFolder)
         {
-            var fileError = Path.Combine(errorFolder, $"errorStart{DateTime.Now}.txt");
+            var fileError = Path.Combine(errorFolder, $"errorStart{DateTime.Now.ToString().Replace("/","_").Replace(":","_")}.json");
             using (FileStream fs = File.Create(fileError))
             {
                 Byte[] title = new UTF8Encoding(true).GetBytes(ex.ToJson());

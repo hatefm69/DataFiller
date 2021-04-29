@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace WebFramework.RabbitMQ
 {
+
+
+
     public abstract class ScopedBackgroundService : BackgroundService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -42,19 +45,24 @@ namespace WebFramework.RabbitMQ
     {
         private readonly SiteSettings _siteSettings;
         private readonly ILogger<Worker> _logger;
-        private readonly IUnitOfWorkDapper _unitOfWork;
         private readonly string _queueName;
         private IConnection connection;
         private IModel channel;
         private AsyncEventingBasicConsumer consumer;
+        private ISaveDataStrategy SqlServer;
+        private ISaveDataStrategy Redis;
 
-        public Worker(ILogger<Worker> logger, IOptions<SiteSettings> siteSettings, IUnitOfWorkDapper unitOfWork, IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+        public Worker(ILogger<Worker> logger
+            , IRedisSaveDataStrategy redisSaveDataStrategy
+            , ISqlServerSaveDataStrategy sqlServer,
+            IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
         {
 
+            SqlServer = sqlServer;
+            Redis = redisSaveDataStrategy;
 
             _siteSettings = siteSettings.Value;
             _logger = logger;
-            _unitOfWork = unitOfWork;
             _queueName = _siteSettings.RabbitMQSettings.QueueName;
             var factory = new ConnectionFactory()
             {
@@ -84,27 +92,11 @@ namespace WebFramework.RabbitMQ
            {
                try
                {
-                   _logger.LogInformation("Received From RabbitMQ");
-                   var body = ea.Body.ToArray();
-                   var message = Encoding.UTF8.GetString(body);
-                    //Console.WriteLine(" [x] Received {0}", message);
-
-                    #region SqlServer
-                    var person = message.FromJson<Person>();
-                   person = await _unitOfWork.People.Add(person);
-                   _logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
-                    #endregion
-                    #region Redis
-                    using (var connection = new RedisClient(_siteSettings.Redis.Host, _siteSettings.Redis.Port))
-                   {
-                       var count = connection.Keys($"{_siteSettings.Redis.Key}*").Length;
-                       var result = connection.Set($"{_siteSettings.Redis.Key}:Id:{count}", person);
-
-                       _logger.LogInformation($"Added To Redis {_siteSettings.Redis.Key}:Id:{count} => {person.ToJson()}");
-                   }
-                    #endregion
-
-                }
+                   string message = ReadMessage(ea);
+                   var person = message.FromJson<Person>();
+                   person = await SqlServer.Execute(person);
+                   person = await Redis.Execute(person);
+               }
                catch (Exception ex)
                {
                    _logger.LogError(ex.ToJson());
@@ -115,6 +107,13 @@ namespace WebFramework.RabbitMQ
                                  consumer: consumer);
 
             return Task.CompletedTask;
+        }
+        private string ReadMessage(BasicDeliverEventArgs ea)
+        {
+            _logger.LogInformation("Received From RabbitMQ");
+            var body = ea.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            return message;
         }
     }
 }

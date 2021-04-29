@@ -210,22 +210,23 @@ namespace WebFramework.Configuration
             var entitiesAssembly = typeof(IEntity).Assembly;
 
             var dataAssembly = typeof(ApplicationDbContext).Assembly;
+            var webframwork = typeof(AutofacConfigurationExtensions).Assembly;
             //var servicesAssembly = typeof(IDataInitializer).Assembly;
             //var BLAssembly = typeof(IBL).Assembly;
             var webFrameworkAssembly = typeof(IRpcClientQueue).Assembly;
              
          
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ITransientDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerDependency();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ISingletonDependency>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
