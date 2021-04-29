@@ -40,7 +40,7 @@ namespace DataFiller
 
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
-            services.AddHostedService<ListenToServerWorker>();
+            services.AddHostedService<ListenToServiceWorker>();
             services.BuildAutofacServiceProvider(Configuration);
             services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
         }

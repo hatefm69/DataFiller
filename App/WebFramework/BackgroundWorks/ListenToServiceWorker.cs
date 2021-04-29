@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 
 namespace WebFramework.BackgroundWorks
 {
-    public class ListenToServerWorker : ScopedBackgroundService
+    public class ListenToServiceWorker : ScopedBackgroundService
     {
         private readonly SiteSettings _siteSettings;
-        private readonly ILogger<ListenToServerWorker> _logger;
+        private readonly ILogger<ListenToServiceWorker> _logger;
         private readonly string _queueName;
         private readonly DefaultObjectPool<IModel> _objectPool;
         private IConnection connection;
@@ -28,7 +28,7 @@ namespace WebFramework.BackgroundWorks
         private ISaveDataStrategy SqlServer;
         private ISaveDataStrategy Redis;
 
-        public ListenToServerWorker(ILogger<ListenToServerWorker> logger
+        public ListenToServiceWorker(ILogger<ListenToServiceWorker> logger
             , IRedisSaveDataStrategy redisSaveDataStrategy
             , ISqlServerSaveDataStrategy sqlServer,
             IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory
