@@ -27,6 +27,7 @@ namespace WebFramework.RabbitMQ
                 Password = _options.Password,
                 Port = _options.Port,
                 VirtualHost = _options.VHost,
+                DispatchConsumersAsync = true
             };
 
             return factory.CreateConnection();

@@ -6,6 +6,7 @@ using Entities.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -46,6 +47,7 @@ namespace WebFramework.RabbitMQ
         private readonly SiteSettings _siteSettings;
         private readonly ILogger<Worker> _logger;
         private readonly string _queueName;
+        private readonly DefaultObjectPool<IModel> _objectPool;
         private IConnection connection;
         private IModel channel;
         private AsyncEventingBasicConsumer consumer;
@@ -55,7 +57,9 @@ namespace WebFramework.RabbitMQ
         public Worker(ILogger<Worker> logger
             , IRedisSaveDataStrategy redisSaveDataStrategy
             , ISqlServerSaveDataStrategy sqlServer,
-            IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+            IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory
+            , IPooledObjectPolicy<IModel> objectPolicy
+            ) : base(serviceScopeFactory)
         {
 
             SqlServer = sqlServer;
@@ -64,16 +68,10 @@ namespace WebFramework.RabbitMQ
             _siteSettings = siteSettings.Value;
             _logger = logger;
             _queueName = _siteSettings.RabbitMQSettings.QueueName;
-            var factory = new ConnectionFactory()
-            {
-                HostName = _siteSettings.RabbitMQSettings.HostName,
-                Password = _siteSettings.RabbitMQSettings.Password,
-                Port = _siteSettings.RabbitMQSettings.Port,
-                UserName = _siteSettings.RabbitMQSettings.UserName,
-                DispatchConsumersAsync = true
-            };
-            connection = factory.CreateConnection();
-            channel = connection.CreateModel();
+
+            _objectPool = new DefaultObjectPool<IModel>(objectPolicy, Environment.ProcessorCount * 2);
+
+            channel = _objectPool.Get();
 
             _logger.LogInformation("Listen To RabbitMQ");
             channel.QueueDeclare(queue: _queueName,
@@ -89,19 +87,19 @@ namespace WebFramework.RabbitMQ
         public override Task ExecuteInScope(IServiceProvider serviceProvider, CancellationToken stoppingToken)
         {
             consumer.Received += async (model, ea) =>
-           {
-               try
-               {
-                   string message = ReadMessage(ea);
-                   var person = message.FromJson<Person>();
-                   person = await SqlServer.Execute(person);
-                   person = await Redis.Execute(person);
-               }
-               catch (Exception ex)
-               {
-                   _logger.LogError(ex.ToJson());
-               }
-           };
+            {
+                try
+                {
+                    string message = ReadMessage(ea);
+                    var person = message.FromJson<Person>();
+                    person = await SqlServer.Execute(person);
+                    person = await Redis.Execute(person);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.ToJson());
+                }
+            };
             channel.BasicConsume(queue: _queueName,
                                  autoAck: true,
                                  consumer: consumer);
