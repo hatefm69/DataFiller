@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessPlan\BusinessLayout.csproj" />
     <ProjectReference Include="..\WebFramework\WebFramework.csproj" />
 
     <None Update="appsettings.Development.json">
