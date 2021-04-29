@@ -1,15 +1,12 @@
 ﻿using Common;
 using Common.Utilities;
 using Data.Contracts;
+using Domain.Database;
 using Entities.Models;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace WebFramework.RabbitMQ
+namespace Services.Database.Sql
 {
     public class SqlServerSaveDataStrategy : ISqlServerSaveDataStrategy, ITransientDependency
     {

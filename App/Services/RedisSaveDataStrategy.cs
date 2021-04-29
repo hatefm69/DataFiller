@@ -1,12 +1,13 @@
 ﻿using Common;
 using Common.Utilities;
+using Domain.Database.Redis;
 using Entities.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServiceStack.Redis;
 using System.Threading.Tasks;
 
-namespace WebFramework.RabbitMQ
+namespace Services.Database.Redis
 {
     public class RedisSaveDataStrategy : IRedisSaveDataStrategy, ITransientDependency
     {

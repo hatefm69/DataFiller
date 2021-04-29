@@ -1,51 +1,25 @@
 ﻿using Common;
-using Common.Exceptions;
 using Common.Utilities;
-using Data.Contracts;
+using Domain.Database;
+using Domain.Database.Redis;
 using Entities.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using ServiceStack.Redis;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebFramework.RabbitMQ
+namespace WebFramework.BackgroundWorks
 {
-
-
-
-    public abstract class ScopedBackgroundService : BackgroundService
-    {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        public ScopedBackgroundService(IServiceScopeFactory serviceScopeFactory)
-        {
-            _serviceScopeFactory = serviceScopeFactory;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                await ExecuteInScope(scope.ServiceProvider, stoppingToken);
-            }
-        }
-
-        public abstract Task ExecuteInScope(IServiceProvider serviceProvider, CancellationToken stoppingToken);
-    }
-
-
-    public class Worker : ScopedBackgroundService
+    public class ListenToServerWorker : ScopedBackgroundService
     {
         private readonly SiteSettings _siteSettings;
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<ListenToServerWorker> _logger;
         private readonly string _queueName;
         private readonly DefaultObjectPool<IModel> _objectPool;
         private IConnection connection;
@@ -54,7 +28,7 @@ namespace WebFramework.RabbitMQ
         private ISaveDataStrategy SqlServer;
         private ISaveDataStrategy Redis;
 
-        public Worker(ILogger<Worker> logger
+        public ListenToServerWorker(ILogger<ListenToServerWorker> logger
             , IRedisSaveDataStrategy redisSaveDataStrategy
             , ISqlServerSaveDataStrategy sqlServer,
             IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory

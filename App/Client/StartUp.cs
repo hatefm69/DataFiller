@@ -3,11 +3,15 @@ using Common;
 using Data;
 using Data.Contracts;
 using Data.Repositories;
+using Domain.Database;
+using Domain.Database.Redis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Database.Redis;
+using Services.Database.Sql;
+using WebFramework.BackgroundWorks;
 using WebFramework.Configuration;
 using WebFramework.MiddleWares;
 using WebFramework.RabbitMQ;
@@ -28,17 +32,15 @@ namespace DataFiller
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer"))) ;
+            services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer")));
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
             services.AddTransient<IRedisSaveDataStrategy, RedisSaveDataStrategy>();
             services.AddTransient<ISqlServerSaveDataStrategy, SqlServerSaveDataStrategy>();
 
-            //services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
 
-            services.AddHostedService<Worker>();
+            services.AddHostedService<ListenToServerWorker>();
             services.BuildAutofacServiceProvider(Configuration);
             services.AddRabbit(Configuration, _siteSetting.RabbitMQSettings);
         }

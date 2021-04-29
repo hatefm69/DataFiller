@@ -1,9 +1,9 @@
 ﻿using Entities.Models;
 using System.Threading.Tasks;
 
-namespace WebFramework.RabbitMQ
+namespace Domain.Database
 {
-    public interface IRedisSaveDataStrategy: ISaveDataStrategy
+    public interface ISaveDataStrategy
     {
         Task<Person> Execute(Person person);
     }
