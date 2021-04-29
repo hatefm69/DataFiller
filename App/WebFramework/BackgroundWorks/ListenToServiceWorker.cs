@@ -22,7 +22,6 @@ namespace WebFramework.BackgroundWorks
         private readonly ILogger<ListenToServiceWorker> _logger;
         private readonly string _queueName;
         private readonly DefaultObjectPool<IModel> _objectPool;
-        private IConnection connection;
         private IModel channel;
         private AsyncEventingBasicConsumer consumer;
         private ISaveDataStrategy SqlServer;
