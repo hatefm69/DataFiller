@@ -1,10 +1,16 @@
 ﻿using Autofac.Extensions.DependencyInjection;
-using Common.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using WebFramework;
 
 namespace DataFiller
@@ -13,24 +19,32 @@ namespace DataFiller
     {
         static void Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddCommandLine(args)
+                .AddJsonFile("appsettings.json")
+                .Build();
+            //Serilog.Log.Logger = CreateSerilogLogger(configuration);
+
             try
             {
-                var configuration = new ConfigurationBuilder()
-                    .AddEnvironmentVariables()
-                    .AddCommandLine(args)
-                    .AddJsonFile("appsettings.json")
-                    .Build();
 
                 CreateHostBuilder(args, configuration).Build().Run();
             }
             catch (Exception ex)
             {
+                Serilog.Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", "asd");
+
                 ErrorHandlerStartApp.WriteInFile(ex);
-                Console.WriteLine(ex.ToJson());
+                //Console.WriteLine(ex.ToJson());
+            }
+            finally
+            {
+                Log.CloseAndFlush();
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
+        private static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
             Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory()) //<-like yours
             .ConfigureAppConfiguration(builder =>
@@ -49,6 +63,8 @@ namespace DataFiller
             {
                 config.UseUrls("http://*:5051");
             });
+
+ 
     }
 
 }

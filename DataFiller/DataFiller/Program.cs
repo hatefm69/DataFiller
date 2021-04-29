@@ -48,7 +48,7 @@ namespace DataFiller
             })
             .ConfigureWebHost(config =>
             {
-                config.UseUrls("http://*:5050");
+                config.UseUrls("http://*:5053");
             }).UseWindowsService();
     }
 
