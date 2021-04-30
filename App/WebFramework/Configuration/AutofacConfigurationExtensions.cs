@@ -7,6 +7,7 @@ using Data.Contracts;
 using Data.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence;
 using ServiceStack;
 using ServiceStack.Redis;
 using System;
