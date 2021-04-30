@@ -10,17 +10,17 @@ namespace Services.Database.Sql
 {
     public class SqlServerSaveDataStrategy : ISqlServerSaveDataStrategy, ITransientDependency
     {
-        private IUnitOfWorkDapper _unitOfWork;
+        private IUnitOfWork _unitOfWork;
         private ILogger<SqlServerSaveDataStrategy> _logger;
 
-        public SqlServerSaveDataStrategy(ILogger<SqlServerSaveDataStrategy> logger, IUnitOfWorkDapper unitOfWork)
+        public SqlServerSaveDataStrategy(ILogger<SqlServerSaveDataStrategy> logger, IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
         public async Task<PersonEntity> Execute(PersonEntity person)
         {
-            person = await _unitOfWork.People.Add(person);
+            person = await _unitOfWork.SqlPeople.Add(person);
             _logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
             return person;
         }

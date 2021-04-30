@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
-    public class PersonRepository : IPersonRepository
+
+    public class PersonSqlServerRepository : IPersonSqlRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
-        public PersonRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public PersonSqlServerRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
             _sqlConnectionFactory = sqlConnectionFactory;
         }

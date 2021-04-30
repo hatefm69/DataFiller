@@ -36,8 +36,10 @@ namespace DataFiller
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ISqlConnectionFactory>(new SqlConnectionFactory(Configuration.GetConnectionString("SqlServer")));
-            services.AddTransient<IPersonRepository, PersonRepository>();
-            services.AddTransient<IUnitOfWorkDapper, UnitOfWorkDapper>();
+            services.AddSingleton<IRedisConnectionFactory>(new RedisConnectionFactory(_siteSetting.Redis.Host,_siteSetting.Redis.Port));
+            services.AddTransient<IPersonSqlRepository, PersonSqlServerRepository>();
+            services.AddTransient<IPersonRedisRepository, PersonRedisRepository>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IRedisSaveDataStrategy, RedisSaveDataStrategy>();
             services.AddTransient<ISqlServerSaveDataStrategy, SqlServerSaveDataStrategy>();
 

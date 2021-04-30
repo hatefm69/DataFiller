@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Data.Contracts
 {
-    public interface IUnitOfWorkDapper//: IDisposable
+    public interface IUnitOfWork//: IDisposable
     {
-        IPersonRepository People { get; }
+        IPersonRepository RedisPeople { get; }
+        IPersonRepository SqlPeople { get; }
     }
 }
