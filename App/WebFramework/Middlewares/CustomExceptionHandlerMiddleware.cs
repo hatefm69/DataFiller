@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -94,18 +93,6 @@ namespace WebFramework.MiddleWares
 
                 await WriteToResponseAsync();
             }
-            catch (SecurityTokenExpiredException exception)
-            {
-                _logger.LogError(exception, exception.Message);
-                SetUnAuthorizeResponse(exception);
-                await WriteToResponseAsync();
-            }
-            catch (UnauthorizedAccessException exception)
-            {
-                _logger.LogError(exception, exception.Message);
-                SetUnAuthorizeResponse(exception);
-                await WriteToResponseAsync();
-            }
             catch (Exception exception)
             {
                 _logger.LogError(exception, exception.Message);
@@ -137,26 +124,6 @@ namespace WebFramework.MiddleWares
                 context.Response.StatusCode = (int)httpStatusCode;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(json);
-            }
-
-            void SetUnAuthorizeResponse(Exception exception)
-            {
-                httpStatusCode = HttpStatusCode.Unauthorized;
-                apiStatusCode = ApiResultStatusCode.UnAuthorized;
-
-                if (_env.IsDevelopment())
-                {
-                    var dic = new Dictionary<string, string>
-                    {
-                        ["Exception"] = exception.Message,
-                        ["StackTrace"] = exception.StackTrace
-                    };
-                    if (exception is SecurityTokenExpiredException tokenException)
-                        dic.Add("Expires", tokenException.Expires.ToString());
-                    var settings = new JsonSerializerSettings();
-                    settings.ContractResolver = new LowercaseContractResolver();
-                    message = JsonConvert.SerializeObject(dic, Formatting.Indented, settings);
-                }
             }
         }
     }
