@@ -19,24 +19,19 @@ namespace DataFiller
     {
         static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            //Serilog.Log.Logger = CreateSerilogLogger(configuration);
-
             try
             {
+                var configuration = new ConfigurationBuilder()
+                    .AddEnvironmentVariables()
+                    .AddCommandLine(args)
+                    .AddJsonFile("appsettings.json")
+                    .Build();
 
                 CreateHostBuilder(args, configuration).Build().Run();
             }
             catch (Exception ex)
             {
-                Serilog.Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", "asd");
-
                 ErrorHandlerStartApp.WriteInFile(ex);
-                //Console.WriteLine(ex.ToJson());
             }
             finally
             {
@@ -64,7 +59,7 @@ namespace DataFiller
                 config.UseUrls("http://*:5051");
             });
 
- 
+
     }
 
 }
