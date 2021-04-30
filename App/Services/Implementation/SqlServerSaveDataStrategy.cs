@@ -18,7 +18,7 @@ namespace Services.Database.Sql
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
-        public async Task<Person> Execute(Person person)
+        public async Task<PersonEntity> Execute(PersonEntity person)
         {
             person = await _unitOfWork.People.Add(person);
             _logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");

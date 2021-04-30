@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{481E17D4-D64C-4C9A-A756-331D75174514}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebFramework", "WebFramework\WebFramework.csproj", "{B589B7D2-CC3D-4E92-AEB0-C7C6FD75261B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "WebFramework\Infrastructure.csproj", "{B589B7D2-CC3D-4E92-AEB0-C7C6FD75261B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{3A03A63E-2FE6-4B99-9DFD-75C12EECD3A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Data\Persistence.csproj", "{3A03A63E-2FE6-4B99-9DFD-75C12EECD3A9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Entities\Domain.csproj", "{7CF35A41-DCD9-414B-A5FA-86B392407E9B}"
 EndProject

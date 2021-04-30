@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebFramework\WebFramework.csproj" />
+    <ProjectReference Include="..\WebFramework\Infrastructure.csproj" />
 
     <None Update="appsettings.Development.json">
       <DependentUpon>appsettings.json</DependentUpon>

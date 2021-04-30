@@ -5,6 +5,6 @@ namespace Domain.Database
 {
     public interface ISqlServerSaveDataStrategy: ISaveDataStrategy
     {
-        Task<Person> Execute(Person person);
+        Task<PersonEntity> Execute(PersonEntity person);
     }
 }

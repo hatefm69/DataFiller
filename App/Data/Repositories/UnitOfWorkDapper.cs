@@ -15,5 +15,6 @@ namespace Data.Repositories
             People = personRepository;
         }
         public IPersonRepository People { get; }
+   
     }
 }

@@ -199,34 +199,32 @@ namespace WebFramework.Configuration
         public static void AddServices(this ContainerBuilder containerBuilder)
         {
             //RegisterType > As > Lifetime
-            containerBuilder.RegisterGeneric(typeof(Repository<>)).As(typeof(IRepository<>)).InstancePerLifetimeScope();
-
-
+           
 
 
 
 
             var commonAssembly = typeof(SiteSettings).Assembly;
-            var entitiesAssembly = typeof(IEntity).Assembly;
+            //var entitiesAssembly = typeof(IEntity).Assembly;
 
-            var dataAssembly = typeof(ApplicationDbContext).Assembly;
+            //var dataAssembly = typeof(ApplicationDbContext).Assembly;
             var webframwork = typeof(AutofacConfigurationExtensions).Assembly;
             //var servicesAssembly = typeof(IDataInitializer).Assembly;
             //var BLAssembly = typeof(IBL).Assembly;
             var webFrameworkAssembly = typeof(IRpcClientQueue).Assembly;
              
          
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork,  webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork,  webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ITransientDependency>()
                 .AsImplementedInterfaces()
                 .InstancePerDependency();
 
-            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork, entitiesAssembly, dataAssembly, webFrameworkAssembly)//, servicesAssembly, BLAssembly)
+            containerBuilder.RegisterAssemblyTypes(commonAssembly, webframwork,   webFrameworkAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<ISingletonDependency>()
                 .AsImplementedInterfaces()
                 .SingleInstance();

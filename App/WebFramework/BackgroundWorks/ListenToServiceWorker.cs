@@ -3,6 +3,7 @@ using Common.Utilities;
 using Domain.Database;
 using Domain.Database.Redis;
 using Entities.Models;
+using Infrastructure.BackgroundWorks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,19 +26,20 @@ namespace WebFramework.BackgroundWorks
         private readonly DefaultObjectPool<IModel> _objectPool;
         private IModel channel;
         private AsyncEventingBasicConsumer consumer;
-        private ISaveDataStrategy SqlServer;
-        private ISaveDataStrategy Redis;
+        private List<ISaveDataStrategy> Databases;
+
 
         public ListenToServiceWorker(ILogger<ListenToServiceWorker> logger
-            , IRedisSaveDataStrategy redisSaveDataStrategy
+            , IRedisSaveDataStrategy redis
             , ISqlServerSaveDataStrategy sqlServer,
             IOptions<SiteSettings> siteSettings, IServiceScopeFactory serviceScopeFactory
             , IPooledObjectPolicy<IModel> objectPolicy
             ) : base(serviceScopeFactory)
         {
 
-            SqlServer = sqlServer;
-            Redis = redisSaveDataStrategy;
+            Databases = new List<ISaveDataStrategy>();
+            Databases.AddRange(new ISaveDataStrategy[] { sqlServer, redis });
+
 
             _siteSettings = siteSettings.Value;
             _logger = logger;
@@ -65,8 +68,9 @@ namespace WebFramework.BackgroundWorks
                 {
                     string message = ReadMessage(ea);
                     var person = message.FromJson<Person>();
-                    person = await SqlServer.Execute(person);
-                    person = await Redis.Execute(person);
+                    var entity = person.ToEntity();
+                    foreach (var database in Databases)
+                        entity=await database.Execute(entity);
                 }
                 catch (Exception ex)
                 {

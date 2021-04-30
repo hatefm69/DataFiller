@@ -19,7 +19,7 @@ namespace Services.Database.Redis
             _logger = logger;
             _siteSettings = siteSettings.Value;
         }
-        public async Task<Person> Execute(Person person)
+        public async Task<PersonEntity> Execute(PersonEntity person)
         {
             using (var connection = new RedisClient(_siteSettings.Redis.Host, _siteSettings.Redis.Port))
             {

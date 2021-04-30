@@ -1,18 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViewModels.AutoMapepr;
 
-namespace Entities.Models
+namespace Infrastructure.BackgroundWorks
 {
-    public class PersonEntity
+    public class Person : BaseDto<Person, PersonEntity>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }
-        public int Id { get; set; }
     }
 }

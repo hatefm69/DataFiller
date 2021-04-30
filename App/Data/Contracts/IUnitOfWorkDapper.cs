@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Contracts
 {
-    public interface IUnitOfWorkDapper
+    public interface IUnitOfWorkDapper//: IDisposable
     {
         IPersonRepository People { get; }
     }

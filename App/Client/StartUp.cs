@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Database.Redis;
 using Services.Database.Sql;
+using ViewModels.AutoMapepr;
 using WebFramework.BackgroundWorks;
 using WebFramework.Configuration;
 using WebFramework.MiddleWares;
@@ -26,6 +27,8 @@ namespace DataFiller
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            AutoMapperConfiguration.InitializeAutoMapper();
 
             _siteSetting = configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
         }

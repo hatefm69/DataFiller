@@ -5,6 +5,6 @@ namespace Domain.Database.Redis
 {
     public interface IRedisSaveDataStrategy: ISaveDataStrategy
     {
-        Task<Person> Execute(Person person);
+        Task<PersonEntity> Execute(PersonEntity person);
     }
 }

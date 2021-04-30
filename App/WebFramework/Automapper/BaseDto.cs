@@ -8,7 +8,7 @@ namespace ViewModels.AutoMapepr
     [Serializable]
     public abstract class BaseDto<TDto, TEntity, TKey> : IHaveCustomMapping
            where TDto : class, new()
-           where TEntity : BaseEntity<TKey>, new()
+           where TEntity : class, new()
     {
         [Display(Name = "ردیف")]
         public TKey Id { get; set; }
@@ -79,7 +79,7 @@ namespace ViewModels.AutoMapepr
     [Serializable]
     public abstract class BaseDto<TDto, TEntity> : BaseDto<TDto, TEntity, int>
         where TDto : class, new()
-        where TEntity : BaseEntity<int>, new()
+        where TEntity : class, new()
     {
 
     }

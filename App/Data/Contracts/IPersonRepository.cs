@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Contracts
 {
-    public interface IPersonRepository : IGenericRepository<Person>
+    public interface IPersonRepository : IGenericRepository<PersonEntity>
     {
     }
 }
