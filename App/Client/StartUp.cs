@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Common.Utilities;
 using Data;
 using Data.Contracts;
 using Data.Repositories;
@@ -9,9 +10,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Persistence;
 using Services.Database.Redis;
 using Services.Database.Sql;
+using System.Reflection;
 using ViewModels.AutoMapepr;
 using WebFramework.BackgroundWorks;
 using WebFramework.Configuration;
