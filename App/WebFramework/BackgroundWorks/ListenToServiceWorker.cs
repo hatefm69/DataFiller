@@ -49,7 +49,8 @@ namespace WebFramework.BackgroundWorks
 
             channel = _objectPool.Get();
 
-            _logger.LogInformation("Listen To RabbitMQ");
+            Log.Write(_logger, "Listen To RabbitMQ");
+
             channel.QueueDeclare(queue: _queueName,
                                 durable: false,
                                 exclusive: false,

@@ -29,14 +29,13 @@ namespace Common.Utilities
             return foundMethod.Name;
         }
 
-        public static void LogMethod(ILogger logger, MethodBase method, string username, params object[] parameters)
+        public static void Write(ILogger logger, MethodBase method, params object[] parameters)
         {
             try
             {
                 var methodName = GetMethodName(method);
 
                 var infoMessage = $"{methodName} Executed";
-                infoMessage += username == null ? "." : $" By {username} .";
                 logger.LogInformation(infoMessage);
 
                 if (parameters == null)
@@ -46,6 +45,26 @@ namespace Common.Utilities
 
                 var jsonParameters = JsonConvert.SerializeObject(parameters);
                 var traceMessage = $"{methodName} Parameters : {jsonParameters}";
+                logger.LogTrace(traceMessage);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        public static void Write(ILogger logger,  params object[] parameters)
+        {
+            try
+            {
+
+                var infoMessage = string.Empty;
+
+                if (parameters == null)
+                {
+                    return;
+                }
+
+                var jsonParameters = JsonConvert.SerializeObject(parameters);
+                var traceMessage = $"{jsonParameters}";
                 logger.LogTrace(traceMessage);
             }
             catch (Exception e)

@@ -4,6 +4,7 @@ using Data.Contracts;
 using Domain.Database;
 using Entities.Models;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Services.Database.Sql
@@ -20,8 +21,9 @@ namespace Services.Database.Sql
         }
         public async Task<PersonEntity> Execute(PersonEntity person)
         {
+            Log.Write(_logger, MethodBase.GetCurrentMethod(),person);
             person = await _unitOfWork.SqlPeople.Add(person);
-            _logger.LogInformation($"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
+            Log.Write(_logger, $"Added To SqlServer people:Id:{person.Id} => {person}");
             return person;
         }
     }
