@@ -23,7 +23,6 @@ namespace Data.Repositories
         }
         public async Task<PersonEntity> Add(PersonEntity entity)
         {
-
             var connection = _redisConnectionFactory.GetOpenConnection();
             entity.Id = connection.Keys($"people*").Length;
             connection.Set($"people:Id:{entity.Id}", entity);
