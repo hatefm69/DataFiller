@@ -1,21 +1,14 @@
 ﻿using Autofac;
-using Autofac.Core.Activators.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using Common;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Concurrent;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
 
 namespace WebFramework.Configuration
 {
- 
- 
+
+
     public static class AutofacConfigurationExtensions
     {
         public static void AddServices(this ContainerBuilder containerBuilder)
@@ -31,7 +24,7 @@ namespace WebFramework.Configuration
             //var dataAssembly = typeof(ApplicationDbContext).Assembly;
             //var servicesAssembly = typeof(IDataInitializer).Assembly;
             //var BLAssembly = typeof(IBL).Assembly;
-    
+
 
             containerBuilder.RegisterAssemblyTypes(commonAssembly)//, entitiesAssembly, dataAssembly)//, servicesAssembly, BLAssembly)
                 .AssignableTo<IScopedDependency>()
@@ -57,7 +50,7 @@ namespace WebFramework.Configuration
             //Register Services to Autofac ContainerBuilder
             containerBuilder.AddServices();
 
-   
+
             var container = containerBuilder.Build();
 
             return new AutofacServiceProvider(container);
