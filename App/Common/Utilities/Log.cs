@@ -51,7 +51,7 @@ namespace Common.Utilities
             {
             }
         }
-        public static void Write(ILogger logger,  params object[] parameters)
+        public static void Write(ILogger logger,  string parameters)
         {
             try
             {
@@ -63,9 +63,7 @@ namespace Common.Utilities
                     return;
                 }
 
-                var jsonParameters = JsonConvert.SerializeObject(parameters);
-                var traceMessage = $"{jsonParameters}";
-                logger.LogTrace(traceMessage);
+                logger.LogTrace(parameters);
             }
             catch (Exception e)
             {

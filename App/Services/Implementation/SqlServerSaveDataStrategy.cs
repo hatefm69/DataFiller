@@ -23,7 +23,7 @@ namespace Services.Database.Sql
         {
             Log.Write(_logger, MethodBase.GetCurrentMethod(),person);
             person = await _unitOfWork.SqlPeople.Add(person);
-            Log.Write(_logger, $"Added To SqlServer people:Id:{person.Id} => {person}");
+            Log.Write(_logger, $"Added To SqlServer people:Id:{person.Id} => {person.ToJson()}");
             return person;
         }
     }

@@ -28,7 +28,7 @@ namespace Services.Database.Redis
 
             await _unitOfWork.RedisPeople.Add(person);
 
-            Log.Write(_logger,$"Added To Redis {_siteSettings.Redis.Key}:Id:{person.Id} => {person}");
+            Log.Write(_logger,$"Added To Redis {_siteSettings.Redis.Key}:Id:{person.Id} => {person.ToJson()}");
 
             return person;
         }
