@@ -1,25 +1,19 @@
 ﻿using Autofac;
-using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
 using Autofac.Extensions.DependencyInjection;
-using Autofac.Features.Variance;
 using Common;
 using Data;
 using Data.Contracts;
 using Data.Repositories;
-using Entities;
-using MediatR;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Services;
 using ServiceStack;
 using ServiceStack.Redis;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using WebFramework.RabbitMQ;
@@ -36,7 +30,7 @@ namespace WebFramework.Configuration
             return result.Length > 0 ? result : throw new NoConstructorsFoundException(targetType);
         }
     }
-     
+
     public class DataAccessModule : Autofac.Module
     {
         private readonly string _databaseConnectionString;
@@ -86,7 +80,7 @@ namespace WebFramework.Configuration
         private int _port;
         private string _host;
 
-        public RedisConnectionFactory(string host,int port)
+        public RedisConnectionFactory(string host, int port)
         {
             _port = port;
             _host = host;
@@ -94,7 +88,7 @@ namespace WebFramework.Configuration
 
         public RedisClient GetOpenConnection()
         {
-            _connection = new RedisClient(_host,  _port);
+            _connection = new RedisClient(_host, _port);
             return _connection;
         }
 
