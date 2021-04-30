@@ -5,7 +5,6 @@ using Domain.Database.Redis;
 using Entities.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ServiceStack.Redis;
 using System.Threading.Tasks;
 
 namespace Services.Database.Redis
@@ -24,7 +23,7 @@ namespace Services.Database.Redis
         }
         public async Task<PersonEntity> Execute(PersonEntity person)
         {
-           await _unitOfWork.RedisPeople.Add(person);
+            await _unitOfWork.RedisPeople.Add(person);
             _logger.LogInformation($"Added To Redis {_siteSettings.Redis.Key}:Id:{person.Id} => {person.ToJson()}");
 
             return person;
