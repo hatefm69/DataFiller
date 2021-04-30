@@ -6,18 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="8.1.1" />
-    <PackageReference Include="LanguageExt.Core" Version="3.4.15" />
-    <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="5.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
-    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="5.1.8" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Data\Persistence.csproj" />
   </ItemGroup>
 

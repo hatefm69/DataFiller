@@ -1,14 +1,9 @@
-﻿using Common;
-using Dapper;
+﻿using Dapper;
 using Data.Contracts;
 using Entities;
 using Entities.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Data.Repositories
@@ -24,7 +19,7 @@ namespace Data.Repositories
         public async Task<PersonEntity> Add(PersonEntity entity)
         {
             var connection = _sqlConnectionFactory.GetOpenConnection();
-            var inserted =await connection.QuerySingleAsync<PersonEntity>(DatabaseStoreProcedure.InsertPerson, new { entity.Age, entity.FirstName, entity.LastName }, commandType: System.Data.CommandType.StoredProcedure);
+            var inserted = await connection.QuerySingleAsync<PersonEntity>(DatabaseStoreProcedure.InsertPerson, new { entity.Age, entity.FirstName, entity.LastName }, commandType: System.Data.CommandType.StoredProcedure);
             return inserted;
         }
 
@@ -52,7 +47,7 @@ namespace Data.Repositories
         public async Task<PersonEntity> Update(PersonEntity entity)
         {
             var connection = _sqlConnectionFactory.GetOpenConnection();
-            var inserted =await connection.QuerySingleAsync<PersonEntity>(DatabaseStoreProcedure.UpdatePerson, entity, commandType: System.Data.CommandType.StoredProcedure);
+            var inserted = await connection.QuerySingleAsync<PersonEntity>(DatabaseStoreProcedure.UpdatePerson, entity, commandType: System.Data.CommandType.StoredProcedure);
             return inserted;
         }
     }
